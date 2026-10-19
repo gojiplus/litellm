@@ -35,7 +35,9 @@ describe('handleAddModelSubmit', () => {
     const formValues = {
       model: 'gpt-4',
       custom_llm_provider: 'openai',
-      model_name: 'my-gpt4-deployment'
+      model_mappings: [
+        { public_name: 'my-gpt4-deployment', litellm_model: 'gpt-4' }
+      ]
     };
 
     await handleAddModelSubmit(formValues, mockAccessToken, mockForm);
