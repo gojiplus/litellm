@@ -11,6 +11,7 @@ module.exports = {
       '<rootDir>/**/*_test.tsx'  // Added this to match your file naming
     ],
     moduleDirectories: ['node_modules'],
+    modulePaths: ['<rootDir>/node_modules'],
     testPathIgnorePatterns: ['/node_modules/'],
     transform: {
       '^.+\\.(ts|tsx)$': 'ts-jest'
