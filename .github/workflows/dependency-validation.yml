@@ -1,0 +1,60 @@
+name: Dependency validation
+
+on:
+  pull_request:
+    paths:
+      - "pyproject.toml"
+      - "uv.lock"
+      - "terraform/provider/**"
+      - ".github/scripts/triage-requirements.txt"
+      - ".github/workflows/dependency-validation.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      LITELLM_LOCAL_MODEL_COST_MAP: "True"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.13"
+      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884
+        with:
+          version: "0.13.1"
+      - run: uv sync --frozen --extra proxy --extra mlflow --group proxy-dev --group e2e-dev --group ci
+      - run: uv run --no-sync python scripts/prisma_generate_if_needed.py
+      - run: >-
+          uv run --no-sync pytest
+          tests/test_litellm/proxy/auth/test_handle_jwt.py
+          tests/test_litellm/proxy/common_utils/test_encrypt_decrypt_utils.py
+          tests/test_litellm/experimental_mcp_client
+          tests/test_litellm/responses/mcp
+          tests/test_litellm/integrations/test_mlflow.py
+          --disable-socket --allow-unix-socket --timeout=30 -q
+      - run: uv --no-config venv "${RUNNER_TEMP}/triage"
+      - run: uv --no-config pip install --python "${RUNNER_TEMP}/triage/bin/python" --require-hashes -r .github/scripts/triage-requirements.txt
+
+  terraform:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: terraform/provider
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version: "1.26"
+          cache-dependency-path: terraform/provider/go.sum
+      - run: go test ./...
+      - run: go vet ./...

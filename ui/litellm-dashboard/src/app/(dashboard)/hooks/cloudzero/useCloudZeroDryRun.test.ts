@@ -28,7 +28,7 @@ vi.mock("@/components/networking", () => ({
 
 describe("useCloudZeroDryRun", () => {
   let queryClient: QueryClient;
-  let fetchSpy: ReturnType<typeof vi.fn>;
+  let fetchSpy: ReturnType<typeof vi.fn<typeof fetch>>;
 
   beforeEach(() => {
     queryClient = new QueryClient({
@@ -44,7 +44,7 @@ describe("useCloudZeroDryRun", () => {
 
     vi.clearAllMocks();
 
-    fetchSpy = vi.fn();
+    fetchSpy = vi.fn<typeof fetch>();
     global.fetch = fetchSpy;
   });
 

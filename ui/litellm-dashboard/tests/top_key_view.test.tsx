@@ -21,6 +21,8 @@ vi.mock("../src/app/(dashboard)/hooks/useAuthorized", () => ({
 describe("TopKeyView", () => {
   const mockUseAuthorized = vi.mocked(useAuthorized);
   const mockProps = {
+    topKeysLimit: 5,
+    setTopKeysLimit: vi.fn(),
     topKeys: [],
     accessToken: "test-token",
     userID: "test-user",
@@ -65,6 +67,8 @@ describe("TopKeyView", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockUseAuthorized.mockReturnValue({
+      isLoading: false,
+      isAuthorized: true,
       token: "mock-token",
       accessToken: mockProps.accessToken,
       userId: mockProps.userID,

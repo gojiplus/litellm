@@ -34,6 +34,21 @@ const spyOnRequestConstruction = () => {
   return { streamBodiedInits };
 };
 
+const keyRequestBody = {
+  key_alias: "my-key",
+  aliases: null,
+  allowed_cache_controls: null,
+  allowed_routes: null,
+  auto_rotate: null,
+  config: null,
+  key_type: null,
+  metadata: null,
+  model_max_budget: null,
+  models: null,
+  permissions: null,
+  spend: null,
+};
+
 describe("typed api client middleware", () => {
   beforeEach(() => {
     registerBaseUrlGetter(() => "");
@@ -83,11 +98,14 @@ describe("typed api client middleware", () => {
     const { streamBodiedInits } = spyOnRequestConstruction();
     const { fetch, requests } = capturingFetch(jsonResponse(200, { key: "sk-new" }));
 
-    await fetchClient.POST("/key/generate", { fetch, body: { key_alias: "my-key" } });
+    await fetchClient.POST("/key/generate", {
+      fetch,
+      body: keyRequestBody,
+    });
 
     expect(streamBodiedInits()).toEqual([]);
     expect(requests[0].headers.get("Authorization")).toBe("Bearer sk-test");
-    expect(await requests[0].text()).toBe(JSON.stringify({ key_alias: "my-key" }));
+    expect(await requests[0].text()).toBe(JSON.stringify(keyRequestBody));
   });
 
   it("keeps the POST body as bytes when rebasing onto a runtime base url", async () => {
@@ -96,7 +114,10 @@ describe("typed api client middleware", () => {
     const { streamBodiedInits } = spyOnRequestConstruction();
     const { fetch, requests } = capturingFetch(jsonResponse(200, { key: "sk-new" }));
 
-    await fetchClient.POST("/key/generate", { fetch, body: { key_alias: "my-key" } });
+    await fetchClient.POST("/key/generate", {
+      fetch,
+      body: keyRequestBody,
+    });
 
     expect(streamBodiedInits()).toEqual([]);
     const sent = requests[0];
@@ -104,7 +125,7 @@ describe("typed api client middleware", () => {
     expect(sent.method).toBe("POST");
     expect(sent.headers.get("Authorization")).toBe("Bearer sk-test");
     expect(sent.headers.get("Content-Type")).toBe("application/json");
-    expect(await sent.text()).toBe(JSON.stringify({ key_alias: "my-key" }));
+    expect(await sent.text()).toBe(JSON.stringify(keyRequestBody));
   });
 
   it("maps a non-2xx response to an ApiError carrying status and the derived message", async () => {

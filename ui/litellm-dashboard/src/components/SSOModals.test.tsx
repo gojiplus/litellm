@@ -417,7 +417,7 @@ describe("SSOModals", () => {
     vi.mocked(updateSSOSettings).mockResolvedValue({});
     vi.mocked(getSSOSettings).mockResolvedValue({ values: {} });
 
-    let formInstance: FormInstance | null = null;
+    let formInstance: FormInstance;
 
     const TestWrapper = () => {
       const [form] = Form.useForm();
@@ -445,7 +445,7 @@ describe("SSOModals", () => {
       expect(getSSOSettings).toHaveBeenCalledWith("test-token");
     });
 
-    formInstance?.setFieldsValue({ sso_provider: "saml" });
+    formInstance!.setFieldsValue({ sso_provider: "saml" });
 
     await waitFor(() => {
       expect(screen.getByLabelText("IdP Metadata URL")).toBeInTheDocument();

@@ -2,7 +2,11 @@ import { describe, it, expect, vi } from "vitest";
 import { render, waitFor } from "@testing-library/react";
 import { AgentControlPlaneView } from "./layout";
 
-const { getMock } = vi.hoisted(() => ({ getMock: vi.fn(() => Promise.resolve({ session_claim: "claim" })) }));
+const { getMock } = vi.hoisted(() => ({
+  getMock: vi.fn<(path: string, options: { query: { plugin_name: string } }) => Promise<{ session_claim: string }>>(
+    () => Promise.resolve({ session_claim: "claim" }),
+  ),
+}));
 
 const pluginModeValue = {
   mode: "litellm-platform-plugin" as string,

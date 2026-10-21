@@ -88,6 +88,7 @@ vi.mock("../common_components/AccessGroupSelector", () => ({
 describe("KeyEditView", () => {
   const MOCK_KEY_DATA: KeyResponse = {
     token: "test-token-123",
+    key_type: "llm_api",
     token_id: "test-token-123",
     key_name: "sk-...TUuw",
     key_alias: "asdasdas",
@@ -99,6 +100,7 @@ describe("KeyEditView", () => {
     config: {},
     user_id: "default_user_id",
     team_id: null,
+    project_id: null,
     max_parallel_requests: 10,
     metadata: {
       logging: [],
@@ -154,6 +156,7 @@ describe("KeyEditView", () => {
     rotation_interval: undefined,
     last_rotation_at: undefined,
     key_rotation_at: undefined,
+    last_active: null,
   };
   it("should render", async () => {
     const { getByText } = renderWithProviders(

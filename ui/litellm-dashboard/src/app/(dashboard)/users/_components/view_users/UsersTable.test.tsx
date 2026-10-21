@@ -39,7 +39,7 @@ interface HarnessOverrides {
   onUserClick?: (userId: string, openInEditMode?: boolean) => void;
   onDeleteUser?: (user: UserInfo) => void;
   onResetPassword?: (userId: string) => void;
-  onSortingChange?: ReturnType<typeof vi.fn>;
+  onSortingChange?: (updater: SortingState | ((previous: SortingState) => SortingState)) => void;
 }
 
 /**

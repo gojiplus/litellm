@@ -100,6 +100,7 @@ const createTestProps = () => {
 
   const teams: Team[] = [
     {
+      spend: 0,
       team_id: "team-1",
       team_alias: "Test Team",
       models: ["gpt-4"],

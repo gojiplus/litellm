@@ -21,13 +21,15 @@ vi.mock("@/app/(dashboard)/hooks/models/useModelCostMap", () => ({
 
 vi.mock("openai", () => ({
   default: {
-    OpenAI: vi.fn().mockImplementation(() => ({
-      chat: {
-        completions: {
-          create: vi.fn(),
+    OpenAI: vi.fn().mockImplementation(function () {
+      return {
+        chat: {
+          completions: {
+            create: vi.fn(),
+          },
         },
-      },
-    })),
+      };
+    }),
   },
 }));
 

@@ -11,7 +11,7 @@ vi.mock("@/components/networking", () => ({
 
 describe("useStoreModelInDB", () => {
   let queryClient: QueryClient;
-  let fetchSpy: ReturnType<typeof vi.fn>;
+  let fetchSpy: ReturnType<typeof vi.fn<typeof fetch>>;
 
   beforeEach(() => {
     queryClient = new QueryClient({
@@ -20,7 +20,7 @@ describe("useStoreModelInDB", () => {
       },
     });
 
-    fetchSpy = vi.fn();
+    fetchSpy = vi.fn<typeof fetch>();
     global.fetch = fetchSpy;
   });
 
@@ -32,10 +32,7 @@ describe("useStoreModelInDB", () => {
     React.createElement(QueryClientProvider, { client: queryClient }, children);
 
   it("should send correct request body to /config/field/update", async () => {
-    fetchSpy.mockResolvedValue({
-      ok: true,
-      json: async () => ({ message: "Success" }),
-    });
+    fetchSpy.mockResolvedValue(Response.json({ message: "Success" }));
 
     const { result } = renderHook(() => useStoreModelInDB(), { wrapper });
 
@@ -59,10 +56,7 @@ describe("useStoreModelInDB", () => {
   });
 
   it("should handle setting store_model_in_db to false", async () => {
-    fetchSpy.mockResolvedValue({
-      ok: true,
-      json: async () => ({ message: "Success" }),
-    });
+    fetchSpy.mockResolvedValue(Response.json({ message: "Success" }));
 
     const { result } = renderHook(() => useStoreModelInDB(), { wrapper });
 
@@ -109,10 +103,7 @@ describe("useStoreModelInDB", () => {
   });
 
   it("should handle API error response", async () => {
-    fetchSpy.mockResolvedValue({
-      ok: false,
-      json: async () => ({ detail: "Unauthorized" }),
-    });
+    fetchSpy.mockResolvedValue(Response.json({ detail: "Unauthorized" }, { status: 401 }));
 
     const { result } = renderHook(() => useStoreModelInDB(), { wrapper });
 
@@ -126,10 +117,7 @@ describe("useStoreModelInDB", () => {
   });
 
   it("should use fallback error message when API returns empty error", async () => {
-    fetchSpy.mockResolvedValue({
-      ok: false,
-      json: async () => ({}),
-    });
+    fetchSpy.mockResolvedValue(Response.json({}, { status: 401 }));
 
     const { result } = renderHook(() => useStoreModelInDB(), { wrapper });
 
