@@ -1,0 +1,6 @@
+ignore:
+  - vulnerability: CVE-2026-89032
+    package:
+      name: litellm
+      version: 1.95.0
+      type: python
