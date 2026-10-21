@@ -28,12 +28,21 @@ vi.mock("antd", async (importOriginal) => {
     </select>
   );
   Select.displayName = "MockSelect";
-  Select.Option = ({ value, disabled, label }: any) => (
-    <option value={value} disabled={disabled}>
-      {label}
-    </option>
-  );
-  Select.Option.displayName = "MockSelectOption";
+  Select.Option = function MockSelectOption({
+    value,
+    disabled,
+    label,
+  }: {
+    value: string;
+    disabled?: boolean;
+    label: React.ReactNode;
+  }) {
+    return (
+      <option value={value} disabled={disabled}>
+        {label}
+      </option>
+    );
+  };
   return { ...actual, Select };
 });
 

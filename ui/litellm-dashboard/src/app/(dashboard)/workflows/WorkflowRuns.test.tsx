@@ -35,17 +35,17 @@ const RUNS: FakeRun[] = [
 ];
 
 function mockFetch(runs: FakeRun[]) {
-  return vi.fn((url: string) => {
+  return vi.fn<(url: string, init: RequestInit) => Promise<Response>>((url: string) => {
     if (url.includes("/runs?limit")) {
-      return Promise.resolve({ ok: true, json: () => Promise.resolve({ runs }) });
+      return Promise.resolve(Response.json({ runs }));
     }
     if (url.includes("/events")) {
-      return Promise.resolve({ ok: true, json: () => Promise.resolve({ events: [] }) });
+      return Promise.resolve(Response.json({ events: [] }));
     }
     if (url.includes("/messages")) {
-      return Promise.resolve({ ok: true, json: () => Promise.resolve({ messages: [] }) });
+      return Promise.resolve(Response.json({ messages: [] }));
     }
-    return Promise.resolve({ ok: false, status: 404, json: () => Promise.resolve({}) });
+    return Promise.resolve(Response.json({}, { status: 404 }));
   });
 }
 
@@ -91,7 +91,7 @@ describe("WorkflowRuns (migrated onto shared DataTable)", () => {
     await user.click(await screen.findByText("First run"));
 
     await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(3));
-    for (const [url, init] of fetchSpy.mock.calls as [string, RequestInit][]) {
+    for (const [url, init] of fetchSpy.mock.calls) {
       expect(init.headers, url).toEqual({ "x-litellm-api-key": "Bearer tok" });
     }
   });
@@ -152,17 +152,17 @@ const DETAIL_MESSAGES: FakeMessage[] = [
 ];
 
 function mockDetailFetch(events: FakeEvent[], messages: FakeMessage[]) {
-  return vi.fn((url: string) => {
+  return vi.fn<(url: string, init: RequestInit) => Promise<Response>>((url: string) => {
     if (url.includes("/runs?limit")) {
-      return Promise.resolve({ ok: true, json: () => Promise.resolve({ runs: [DETAIL_RUN] }) });
+      return Promise.resolve(Response.json({ runs: [DETAIL_RUN] }));
     }
     if (url.includes("/events")) {
-      return Promise.resolve({ ok: true, json: () => Promise.resolve({ events }) });
+      return Promise.resolve(Response.json({ events }));
     }
     if (url.includes("/messages")) {
-      return Promise.resolve({ ok: true, json: () => Promise.resolve({ messages }) });
+      return Promise.resolve(Response.json({ messages }));
     }
-    return Promise.resolve({ ok: false, status: 404, json: () => Promise.resolve({}) });
+    return Promise.resolve(Response.json({}, { status: 404 }));
   });
 }
 

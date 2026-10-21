@@ -72,7 +72,9 @@ const org: Organization = {
 };
 
 const renderForm = (overrides?: {
-  patchOrganization?: ReturnType<typeof vi.fn>;
+  patchOrganization?: ReturnType<
+    typeof vi.fn<NonNullable<React.ComponentProps<typeof OrgSettingsForm>["patchOrganization"]>>
+  >;
   onSaved?: () => void;
   org?: Organization;
 }) => {

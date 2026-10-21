@@ -120,7 +120,9 @@ def test_still_valid_one_second_before_expiry():
 
 def test_tampered_signature_is_bad_signature():
     token = _mint_access()
-    tampered = token[:-2] + ("aa" if not token.endswith("aa") else "bb")
+    body, signature = token.rsplit(".", 1)
+    tampered_signature = ("A" if signature[0] != "A" else "B") + signature[1:]
+    tampered = f"{body}.{tampered_signature}"
     assert isinstance(open_session_token(tampered, KEYS, NOW), SessionBadSignature)
 
 

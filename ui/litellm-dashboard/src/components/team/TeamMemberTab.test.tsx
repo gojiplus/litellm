@@ -69,6 +69,7 @@ const createMockTeamData = (overrides: Partial<TeamData> = {}): TeamData => ({
     {
       user_id: "user1@test.com",
       team_id: "team-123",
+      total_spend: 0,
       budget_id: "budget1",
       spend: 100.5,
       litellm_budget_table: {

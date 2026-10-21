@@ -303,6 +303,7 @@ class Cache:
         "user_api_key",
         "user_api_key_team_id",
         "user_api_key_org_id",
+        "user_api_key_end_user_id",
     )
 
     def _is_semantic_cache(self) -> bool:
@@ -313,18 +314,16 @@ class Cache:
         )
 
     def _get_semantic_cache_tenant_scope(self, kwargs: dict) -> str:
-        metadata: dict = kwargs.get("metadata") or {}
         litellm_params: dict = kwargs.get("litellm_params") or {}
-        metadata_in_litellm_params: dict = litellm_params.get("metadata") or {}
-
-        scope = ""
-        for field in self._SEMANTIC_CACHE_TENANT_SCOPE_FIELDS:
-            value = metadata.get(field)
-            if value is None:
-                value = metadata_in_litellm_params.get(field)
-            if value is not None:
-                scope += f"{field}: {value}"
-        return scope
+        metadata_sources = tuple(
+            source.get(key) or {} for source in (kwargs, litellm_params) for key in ("metadata", "litellm_metadata")
+        )
+        return "".join(
+            f"{field}: {value}"
+            for field in self._SEMANTIC_CACHE_TENANT_SCOPE_FIELDS
+            if (value := next((source[field] for source in metadata_sources if source.get(field) is not None), None))
+            is not None
+        )
 
     def get_cache_key(self, **kwargs) -> str:
         """

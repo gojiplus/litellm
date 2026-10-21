@@ -2,7 +2,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CloudZeroIntegrationSettings } from "./CloudZeroIntegrationSettings";
-import { CloudZeroSettings } from "./types";
 
 vi.mock("@/app/(dashboard)/hooks/useAuthorized", () => ({
   __esModule: true,
@@ -40,7 +39,7 @@ vi.mock("antd", async () => {
 
 describe("CloudZeroIntegrationSettings", () => {
   let queryClient: QueryClient;
-  const mockSettings: CloudZeroSettings = {
+  const mockSettings = {
     connection_id: "test-connection-id",
     api_key_masked: "****",
     timezone: "UTC",

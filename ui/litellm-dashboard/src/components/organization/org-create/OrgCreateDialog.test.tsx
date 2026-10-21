@@ -50,7 +50,11 @@ const Harness = ({ createOrganization }: { createOrganization: (body: unknown) =
   );
 };
 
-const renderDialog = (overrides?: { createOrganization?: ReturnType<typeof vi.fn> }) => {
+const renderDialog = (overrides?: {
+  createOrganization?: ReturnType<
+    typeof vi.fn<NonNullable<React.ComponentProps<typeof OrgCreateDialog>["createOrganization"]>>
+  >;
+}) => {
   const createOrganization = overrides?.createOrganization ?? vi.fn().mockResolvedValue({});
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   render(

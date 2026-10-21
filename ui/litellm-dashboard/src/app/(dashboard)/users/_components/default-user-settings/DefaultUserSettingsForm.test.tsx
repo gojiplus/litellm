@@ -66,8 +66,12 @@ const SAVED_BODY = {
 };
 
 const renderForm = (overrides?: {
-  fetchSettings?: ReturnType<typeof vi.fn>;
-  updateSettings?: ReturnType<typeof vi.fn>;
+  fetchSettings?: ReturnType<
+    typeof vi.fn<NonNullable<React.ComponentProps<typeof DefaultUserSettingsForm>["fetchSettings"]>>
+  >;
+  updateSettings?: ReturnType<
+    typeof vi.fn<NonNullable<React.ComponentProps<typeof DefaultUserSettingsForm>["updateSettings"]>>
+  >;
 }) => {
   const fetchSettings = overrides?.fetchSettings ?? vi.fn().mockResolvedValue(SETTINGS);
   const updateSettings = overrides?.updateSettings ?? vi.fn().mockResolvedValue(undefined);

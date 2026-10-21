@@ -66,6 +66,7 @@ describe("KeyInfoView", () => {
   });
   const MOCK_KEY_DATA: KeyResponse = {
     token: "test-token-123",
+    key_type: "llm_api",
     token_id: "test-token-123",
     key_name: "sk-...TUuw",
     key_alias: "asdasdas",
@@ -133,10 +134,13 @@ describe("KeyInfoView", () => {
     rotation_interval: undefined,
     last_rotation_at: undefined,
     key_rotation_at: undefined,
+    last_active: null,
   };
 
   // Base mock for useAuthorized hook
   const baseUseAuthorizedMock = {
+    isLoading: false,
+    isAuthorized: true,
     accessToken: "test-token",
     userId: "test-user",
     userRole: "admin",

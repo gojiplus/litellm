@@ -54,7 +54,7 @@ const mockCloudZeroSettings: CloudZeroSettings = {
 
 describe("useCloudZeroSettings", () => {
   let queryClient: QueryClient;
-  let fetchSpy: ReturnType<typeof vi.fn>;
+  let fetchSpy: ReturnType<typeof vi.fn<typeof fetch>>;
 
   beforeEach(() => {
     queryClient = new QueryClient({
@@ -69,8 +69,10 @@ describe("useCloudZeroSettings", () => {
     });
 
     vi.clearAllMocks();
+    mockGetProxyBaseUrl.mockReturnValue(mockProxyBaseUrl);
+    mockGetGlobalLitellmHeaderName.mockReturnValue(mockHeaderName);
 
-    fetchSpy = vi.fn();
+    fetchSpy = vi.fn<typeof fetch>();
     global.fetch = fetchSpy;
   });
 
@@ -240,7 +242,7 @@ describe("useCloudZeroSettings", () => {
 
 describe("useCloudZeroUpdateSettings", () => {
   let queryClient: QueryClient;
-  let fetchSpy: ReturnType<typeof vi.fn>;
+  let fetchSpy: ReturnType<typeof vi.fn<typeof fetch>>;
 
   beforeEach(() => {
     queryClient = new QueryClient({
@@ -255,8 +257,10 @@ describe("useCloudZeroUpdateSettings", () => {
     });
 
     vi.clearAllMocks();
+    mockGetProxyBaseUrl.mockReturnValue(mockProxyBaseUrl);
+    mockGetGlobalLitellmHeaderName.mockReturnValue(mockHeaderName);
 
-    fetchSpy = vi.fn();
+    fetchSpy = vi.fn<typeof fetch>();
     global.fetch = fetchSpy;
   });
 
@@ -481,7 +485,7 @@ describe("useCloudZeroUpdateSettings", () => {
 
 describe("useCloudZeroDeleteSettings", () => {
   let queryClient: QueryClient;
-  let fetchSpy: ReturnType<typeof vi.fn>;
+  let fetchSpy: ReturnType<typeof vi.fn<typeof fetch>>;
 
   beforeEach(() => {
     queryClient = new QueryClient({
@@ -496,8 +500,10 @@ describe("useCloudZeroDeleteSettings", () => {
     });
 
     vi.clearAllMocks();
+    mockGetProxyBaseUrl.mockReturnValue(mockProxyBaseUrl);
+    mockGetGlobalLitellmHeaderName.mockReturnValue(mockHeaderName);
 
-    fetchSpy = vi.fn();
+    fetchSpy = vi.fn<typeof fetch>();
     global.fetch = fetchSpy;
   });
 

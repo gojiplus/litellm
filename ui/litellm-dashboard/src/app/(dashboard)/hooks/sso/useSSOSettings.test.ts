@@ -16,6 +16,11 @@ vi.mock("@/app/(dashboard)/hooks/useAuthorized", () => ({
 
 const mockSSOSettingsResponse: SSOSettingsResponse = {
   values: {
+    saml_idp_metadata_url: null,
+    saml_idp_metadata_xml: null,
+    saml_sp_entity_id: null,
+    saml_allow_unsolicited: null,
+    generic_scope: null,
     google_client_id: "test-google-client-id",
     google_client_secret: "test-google-client-secret",
     microsoft_client_id: "test-microsoft-client-id",
@@ -234,6 +239,11 @@ describe("useSSOSettings", () => {
   it("should return empty values when API returns minimal data", async () => {
     const minimalResponse: SSOSettingsResponse = {
       values: {
+        saml_idp_metadata_url: null,
+        saml_idp_metadata_xml: null,
+        saml_sp_entity_id: null,
+        saml_allow_unsolicited: null,
+        generic_scope: null,
         google_client_id: null,
         google_client_secret: null,
         microsoft_client_id: null,

@@ -70,7 +70,7 @@ vi.mock("@/app/(dashboard)/hooks/teams/useTeams", () => ({
     data: {
       pages: [
         {
-          teams: [{ team_id: "team-1", team_alias: "Test Team", organization_id: "org-1" }],
+          teams: [{ spend: 0, team_id: "team-1", team_alias: "Test Team", organization_id: "org-1" }],
           total: 1,
           page: 1,
           page_size: 20,
@@ -106,6 +106,8 @@ vi.mock("@/app/(dashboard)/hooks/tags/useTags", () => ({
 }));
 
 const mockAuthorizedUser = (userRole: string, userId: string, premiumUser: boolean) => ({
+  isLoading: false,
+  isAuthorized: true,
   token: "test-token",
   accessToken: "test-access-token",
   userId,
@@ -117,6 +119,7 @@ const mockAuthorizedUser = (userRole: string, userId: string, premiumUser: boole
 });
 
 const testTeam: Team = {
+  spend: 0,
   team_id: "team-1",
   team_alias: "Test Team",
   models: ["gpt-4"],

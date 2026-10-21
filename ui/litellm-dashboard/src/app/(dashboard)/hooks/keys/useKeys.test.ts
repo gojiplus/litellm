@@ -39,6 +39,7 @@ vi.mock("@/app/(dashboard)/hooks/useAuthorized", () => ({
 const mockKeys: KeyResponse[] = [
   {
     token: "sk-test-key-1",
+    key_type: "llm_api",
     token_id: "key-1",
     key_name: "Test Key 1",
     key_alias: "test-key-1",
@@ -96,6 +97,7 @@ const mockKeys: KeyResponse[] = [
   },
   {
     token: "sk-test-key-2",
+    key_type: "llm_api",
     token_id: "key-2",
     key_name: "Test Key 2",
     key_alias: "test-key-2",
