@@ -100,7 +100,12 @@ jobs:
           RERUNS: ${{ inputs.reruns }}
           DIST: ${{ inputs.dist }}
         run: |
-          read -r -a test_paths <<< "${TEST_PATH:?}"
+          read -r -a patterns <<< "${TEST_PATH:?}"
+          mapfile -t test_paths < <(
+            for pattern in "${patterns[@]}"; do
+              compgen -G "$pattern" || printf '%s\n' "$pattern"
+            done
+          )
           if [ "${WORKERS}" = "0" ]; then
             uv run --no-sync pytest "${test_paths[@]}" \
               --tb=short -vv \

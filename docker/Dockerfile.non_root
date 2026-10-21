@@ -44,7 +44,7 @@ RUN for i in 1 2 3; do \
         bash \
         coreutils \
         curl \
-        openssl \
+        openssl-3.6 \
         libsndfile \
         nodejs \
         npm && break || sleep 5; \
@@ -124,7 +124,7 @@ RUN for i in 1 2 3; do \
       apk upgrade --no-cache && break || sleep 5; \
     done && \
     for i in 1 2 3; do \
-      apk add --no-cache python3 bash openssl tzdata libsndfile nodejs && break || sleep 5; \
+      apk add --no-cache python3 bash openssl-3.6 tzdata libsndfile nodejs && break || sleep 5; \
     done
 
 # Copy only what runtime needs. The application is installed inside the venv;
