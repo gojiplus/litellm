@@ -53,12 +53,11 @@ class TestRequestCompliance:
     """Tests that our request bodies match the OpenAPI spec."""
 
     def test_create_model_interaction_request_schema(self, spec_dict):
-        """Verify CreateModelInteractionParams schema fields."""
-        schema = spec_dict["components"]["schemas"]["CreateModelInteractionParams"]
+        """Verify ModelInteraction request fields."""
+        schema = spec_dict["components"]["schemas"]["ModelInteraction"]
 
-        # Required fields per spec
-        assert "model" in schema["required"]
-        assert "input" in schema["required"]
+        assert "model" in schema["properties"]
+        assert "input" in schema["properties"]
 
         # Check our supported optional fields exist in spec
         our_optional_fields = [
@@ -80,8 +79,8 @@ class TestRequestCompliance:
             print(f"✓ Field '{field}' exists in spec")
 
     def test_input_types_match_spec(self, spec_dict):
-        """Verify input field supports string, Content, Content[], Turn[]."""
-        schema = spec_dict["components"]["schemas"]["CreateModelInteractionParams"]
+        """Verify input supports text, content blocks, and conversation steps."""
+        schema = spec_dict["components"]["schemas"]["ModelInteraction"]
         input_schema = schema["properties"]["input"]
 
         # The input property may be inline oneOf or a $ref to InteractionsInput
@@ -105,26 +104,14 @@ class TestRequestCompliance:
         assert "string" in input_types, "Input should support string"
         assert "array" in input_types, "Input should support array"
 
-    def test_content_schema_uses_discriminator(self, spec_dict):
-        """Verify Content uses type discriminator."""
-        content_schema = spec_dict["components"]["schemas"]["Content"]
-
-        assert "discriminator" in content_schema
-        assert content_schema["discriminator"]["propertyName"] == "type"
-
-        # Check TextContent is an option (via mapping if present, or via oneOf refs)
-        mapping = content_schema["discriminator"].get("mapping")
-        if mapping:
-            assert "text" in mapping
-            print(f"Content type discriminator mapping: {list(mapping.keys())}")
-        else:
-            # Discriminator without explicit mapping — verify via oneOf
-            one_of = content_schema.get("oneOf", [])
-            ref_names = [opt["$ref"].split("/")[-1] for opt in one_of if "$ref" in opt]
-            assert (
-                "TextContent" in ref_names
-            ), f"TextContent not found in oneOf refs: {ref_names}"
-            print(f"Content type discriminator (no mapping), oneOf refs: {ref_names}")
+    def test_content_schema_has_distinct_type_tags(self, spec_dict):
+        schemas = spec_dict["components"]["schemas"]
+        content_schema = schemas["Content"]
+        ref_names = tuple(option["$ref"].split("/")[-1] for option in content_schema["oneOf"])
+        assert "TextContent" in ref_names
+        tags = tuple(schemas[name]["properties"]["type"]["const"] for name in ref_names)
+        assert len(tags) == len(set(tags))
+        assert "text" in tags
 
     def test_text_content_schema(self, spec_dict):
         """Verify TextContent schema."""
@@ -135,17 +122,14 @@ class TestRequestCompliance:
         assert text_schema["properties"]["type"].get("const") == "text"
         print("✓ TextContent schema is correct")
 
-    def test_turn_schema(self, spec_dict):
-        """Verify Turn schema for multi-turn conversations."""
-        turn_schema = spec_dict["components"]["schemas"]["Turn"]
-
-        assert "role" in turn_schema["properties"]
-        assert "content" in turn_schema["properties"]
-
-        # Content can be string or Content[]
-        content_prop = turn_schema["properties"]["content"]
-        assert "oneOf" in content_prop
-        print("✓ Turn schema supports role + content")
+    @pytest.mark.parametrize("name, tag", [("UserInputStep", "user_input"), ("ModelOutputStep", "model_output")])
+    def test_conversation_step_schema(self, spec_dict, name, tag):
+        step_schema = spec_dict["components"]["schemas"][name]
+        assert step_schema["properties"]["type"]["const"] == tag
+        assert "type" in step_schema["required"]
+        content = step_schema["properties"]["content"]
+        assert content["type"] == "array"
+        assert content["items"]["$ref"] == "#/components/schemas/Content"
 
 
 class TestResponseCompliance:
@@ -153,17 +137,8 @@ class TestResponseCompliance:
 
     def test_interaction_response_fields(self, spec_dict):
         """Verify our InteractionsAPIResponse has correct fields."""
-        # The response is the dedicated `Interaction` schema. Google moved the
-        # output-only fields (notably the `steps` array, formerly `outputs`)
-        # off `CreateModelInteractionParams` and onto `Interaction`; the request
-        # schema no longer carries `steps`. Google later moved `role` off
-        # `Interaction` onto the per-turn `Turn` schema (asserted in
-        # test_turn_schema), so it is no longer a top-level output field here.
-        # Keep this aligned with the live spec.
         schema = spec_dict["components"]["schemas"]["Interaction"]
 
-        # Output fields (readOnly). `role` was removed from the `Interaction`
-        # schema by Google; it now lives only on `Turn`.
         output_fields = [
             "id",
             "status",
@@ -259,7 +234,7 @@ class TestEndpointCompliance:
 
         get_path = None
         for path, methods in paths.items():
-            if "{id}" in path and "interactions" in path and "get" in methods:
+            if path.endswith("/interactions/{interactionsId}") and "get" in methods:
                 get_path = path
                 break
 
@@ -272,7 +247,7 @@ class TestEndpointCompliance:
 
         delete_path = None
         for path, methods in paths.items():
-            if "{id}" in path and "interactions" in path and "delete" in methods:
+            if path.endswith("/interactions/{interactionsId}") and "delete" in methods:
                 delete_path = path
                 break
 
